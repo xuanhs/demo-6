@@ -15,8 +15,10 @@ public class Product implements Runnable {
 
     @Override
     public void run() {
-       /* for (int i = 0; i < 10; i++) {
-            factory.product(Thread.currentThread().toString() + i);
-        }*/
+        try {
+            factory.product("商品：" + Thread.currentThread());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

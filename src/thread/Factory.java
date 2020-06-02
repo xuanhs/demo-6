@@ -1,14 +1,13 @@
 package thread;
 
-import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Scanner;
 
 public class Factory {
 
     private Queue<String> products;
 
     private Integer max;
+
 
     public Factory(Queue<String> products, Integer max) {
         this.products = products;
@@ -18,51 +17,37 @@ public class Factory {
 
     public void product(String product) throws InterruptedException {
         synchronized (products) {
-            Thread.sleep(1000);
-            if (products == null) {
-                products = new LinkedList<>();
-            }
-            if (product == null) {
-                throw new NullPointerException();
-            }
-            if (products.size() >= max) {
-                products.wait();
+            //库存过多时暂停生产
+            Thread.sleep(500);
+            while (products.size() > max) {
+                System.out.println("库存量：" + products.size() + "不能生产啦!");
+                try {
+                    //条件不满足，生产阻塞
+                    products.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             products.add(product);
-            products.notify();
+            System.out.println("生产啦，现仓储量为:" + products.size());
+            products.notifyAll();
         }
-
     }
 
-    public String customer() throws InterruptedException {
+    public void customer() throws InterruptedException {
         synchronized (products) {
-            Thread.sleep(1000);
-            if (products == null || products.size() <= 0) {
-                products.wait();
+            Thread.sleep(500);
+            //不满足消费条件
+            while(0 >= products.size()){
+                System.out.println("库存为0不能消费啦");
+                try {
+                    products.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-
-            String result = products.poll();
-            products.notify();
-            return result;
-        }
-    }
-
-    public static void main(String[] args) throws InterruptedException {
-        Factory factory = new Factory(new LinkedList<>(),5);
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            String next = scanner.nextLine();
-            if ("exit".equals(next)) {
-                System.out.println("结束");
-                break;
-            }
-            if ("in".equals(next)) {
-                String product = scanner.nextLine();
-                factory.product(product);
-            } else if ("out".equals(next)) {
-                System.out.println(factory.customer());
-            }
-
+            System.out.println("消费啦:" +products.poll());
+            products.notifyAll();
         }
     }
 }

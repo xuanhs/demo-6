@@ -7,15 +7,21 @@ public class Main {
 
     public static void main(String[] args) {
         Queue<String> queue = new LinkedList<>();
-        Factory factory = new Factory(queue,10);
-        for(int i = 0;i<10;i++){
-            Product product = new Product(factory);
-            product.run();
-        }
+        Factory factory = new Factory(queue, 5);
+
 
         for(int i = 0;i<10;i++){
-            Customer customer = new Customer(factory);
-            customer.run();
+            Product product = new Product(factory);
+            new Thread(product).start();
         }
+
+        for(int i =0;i<10;i++){
+            Customer customer = new Customer(factory);
+            new Thread(customer).start();
+        }
+
+
+
+
     }
 }
