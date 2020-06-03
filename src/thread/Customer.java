@@ -5,7 +5,7 @@ package thread;
  * @date ：Created in 2020/6/1 18:53
  * @description：
  */
-public class Customer implements Runnable {
+public class Customer extends Thread {
 
     private Factory factory;
 
